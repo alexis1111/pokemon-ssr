@@ -1,13 +1,11 @@
 import {
-  ApplicationRef,
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
-  OnDestroy,
-  OnInit,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, tap } from 'rxjs';
 
@@ -19,53 +17,33 @@ import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'pokemons-page',
-  imports: [PokemonListComponent, PokemonListSkeletonComponent],
+  imports: [RouterLink, PokemonListComponent, PokemonListSkeletonComponent],
   templateUrl: './pokemons-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class PokemonsPageComponent implements OnInit, OnDestroy {
+export default class PokemonsPageComponent {
   private pokemonsService = inject(PokemonsService);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private appRef = inject(ApplicationRef);
-  private $appState = this.appRef.isStable.subscribe((isStable) => {
-    console.log(isStable);
-  });
   private title = inject(Title);
 
-  isLoading = signal(false);
   pokemons = signal<Pokemon[]>([]);
   currentPage = toSignal<number>(
-    this.route.queryParamMap.pipe(
-      map((params) => params.get('page') ?? '1'),
+    this.route.params.pipe(
+      map((params) => params['page'] ?? '1'),
       map((page) => (isNaN(+page) ? 1 : +page)),
       map((page) => Math.max(1, page))
     )
   );
 
-  ngOnInit(): void {
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 1500);
-    this.loadPokemons();
-  }
+  loadOnPageChanged = effect(() => {
+    this.loadPokemons(this.currentPage());
+  });
 
-  loadPokemons(page = 0): void {
-    const pageToLoad = this.currentPage()! + page;
-
-    this.pokemonsService.loadPage(pageToLoad).pipe(
-      tap(() => {
-        this.router.navigate([], {
-          queryParams: { page: pageToLoad },
-        });
-      }),
-      tap(() => this.title.setTitle(`Pokemons - Page ${pageToLoad}`))
+  private loadPokemons(page = 0): void {
+    this.pokemonsService.loadPage(page).pipe(
+      tap(() => this.title.setTitle(`Pokemons - Page ${page}`))
     ).subscribe((pokemons) => {
       this.pokemons.set(pokemons);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.$appState.unsubscribe();
   }
 }

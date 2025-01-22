@@ -9,10 +9,16 @@
 }
 <!-- pokemon list skeleton -->
 <div class="flex justify-between">
-  <button class="mt-2" (click)="loadPokemons(-1)">
+  <button
+    [disabled]="currentPage() === 1"
+    [routerLink]="['/pokemons/page', currentPage()! - 1]"
+    class="mt-2"
+  >
     Prev
   </button>
-  <button class="mt-2" (click)="loadPokemons(+1)">
+  <button
+    class="mt-2"
+    [routerLink]="['/pokemons/page', currentPage()! + 1]">
     Next
   </button>
 </div>
