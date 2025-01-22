@@ -1,0 +1,19 @@
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-3 md:grid-cols-5">
+  <!-- pokemon card -->
+  @for(pokemon of '123456789012'.split(''); track $index) {
+    <div class="flex flex-col items-center justify-center p-4 bg-white bg-opacity-25 rounded-lg shadow-md cursor-pointer h-44">
+      <div class="w-24 h-24 bg-gray-300 rounded-full animate-pulse">
+      </div>
+      <div class="flex mt-5 text-center">
+        <div class="w-20 h-4 bg-gray-300 rounded animate-pulse"></div>
+      </div>
+    </div>
+  }
+
+  <!-- si no hay -->
+  <!-- <div
+    class="flex items-center justify-center col-span-5 text-center border-white h-28"
+  >
+    no hay pokemons
+  </div> -->
+</div>
