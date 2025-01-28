@@ -16,6 +16,7 @@ import { Pokemon } from '../../interfaces';
 })
 export class PokemonCardComponent {
   pokemon = input.required<Pokemon>();
+
   readonly pokemonImage = computed(
     () =>
       `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
